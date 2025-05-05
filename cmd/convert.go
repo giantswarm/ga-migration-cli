@@ -3,7 +3,11 @@ package cmd
 import (
 	"fmt"
 	"log"
+	"os"
 
+	"k8s.io/cli-runtime/pkg/printers"
+
+	"github.com/giantswarm/ga-migration-cli/internal/httproute"
 	"github.com/giantswarm/ga-migration-cli/internal/ingress"
 	"github.com/spf13/cobra"
 )
@@ -22,15 +26,19 @@ func init() {
 
 func runConvert(cmd *cobra.Command, args []string) {
 	filename, _ := cmd.Flags().GetString("filename")
-	i, err := ingress.NewFromFile(filename)
+	source, err := ingress.NewFromFile(filename)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(i)
-	// create a new converter
-	// and convert resource
+	httproute := httproute.New().WithIngress(source)
 
-	// output the new resource
+	resourcePrinter := &printers.YAMLPrinter{}
+
+	// TODO: Clean resource of unwanted fields like: Status, ResourceVersion, CreationTimestamp, etc.
+	err = resourcePrinter.PrintObj(httproute.Resource, os.Stdout)
+	if err != nil {
+		fmt.Printf("# Error printing %s HTTPRoute: %v\n", httproute.Resource.Name, err)
+	}
 }
