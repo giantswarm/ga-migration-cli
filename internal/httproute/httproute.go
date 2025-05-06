@@ -26,10 +26,10 @@ func New() *HTTPRoute {
 		Spec: gatewayv1.HTTPRouteSpec{
 			Rules: []gatewayv1.HTTPRouteRule{},
 		},
+		Status: gatewayv1.HTTPRouteStatus{},
 	}
 
 	hr.SetGroupVersionKind(HTTPRouteGVK)
-	hr.Status = gatewayv1.HTTPRouteStatus{}
 
 	return &HTTPRoute{
 		Resource: hr,
@@ -41,5 +41,21 @@ func (r *HTTPRoute) WithIngress(ingress *networkingv1.Ingress) *HTTPRoute {
 	r.Ingress = ingress
 	r.Resource.ObjectMeta.Name = ingress.Name
 	r.Resource.ObjectMeta.Namespace = ingress.Namespace
+
+	r.Resource.Spec.Hostnames = []gatewayv1.Hostname{gatewayv1.Hostname(ingress.Spec.Rules[0].Host)}
+	return r
+}
+
+func (r *HTTPRoute) WithGateway(name, namespace, sectionName string) *HTTPRoute {
+	r.Resource.Spec.ParentRefs = []gatewayv1.ParentReference{
+		{
+			Name:      gatewayv1.ObjectName(name),
+			Namespace: (*gatewayv1.Namespace)(&namespace),
+		},
+	}
+	if sectionName != "" {
+		r.Resource.Spec.ParentRefs[0].SectionName = (*gatewayv1.SectionName)(&sectionName)
+	}
+
 	return r
 }

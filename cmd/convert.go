@@ -22,9 +22,13 @@ func init() {
 	rootCmd.AddCommand(convertCmd)
 
 	convertCmd.Flags().StringP("filename", "f", "", "Filename containing the ingress resource")
+	convertCmd.Flags().StringP("gateway", "", "giantswarm-default", "Name of the Gateway")
+	convertCmd.Flags().StringP("gateway-namespace", "", "envoy-gateway-system", "Namespace of the Gateway")
 }
 
 func runConvert(cmd *cobra.Command, args []string) {
+	resourcePrinter := &printers.YAMLPrinter{}
+
 	filename, _ := cmd.Flags().GetString("filename")
 	source, err := ingress.NewFromFile(filename)
 
@@ -32,9 +36,10 @@ func runConvert(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	httproute := httproute.New().WithIngress(source)
+	gatewayName, _ := cmd.Flags().GetString("gateway")
+	gatewayNamespace, _ := cmd.Flags().GetString("gateway-namespace")
 
-	resourcePrinter := &printers.YAMLPrinter{}
+	httproute := httproute.New().WithIngress(source).WithGateway(gatewayName, gatewayNamespace, "https")
 
 	// TODO: Clean resource of unwanted fields like: Status, ResourceVersion, CreationTimestamp, etc.
 	err = resourcePrinter.PrintObj(httproute.Resource, os.Stdout)
