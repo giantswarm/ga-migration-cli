@@ -11,7 +11,7 @@ func toRules(ingressRule []networkingv1.IngressRule) []gatewayv1.HTTPRouteRule {
 	// Only rule 0 is supported for now
 	rule := &gatewayv1.HTTPRouteRule{
 		BackendRefs: toBackendRefs(ingressRule[0].HTTP.Paths[0].Backend),
-		Matches:     toMatches(),
+		Matches:     toMatches(ingressRule[0].HTTP.Paths[0]),
 	}
 
 	rules = append(rules, *rule)
@@ -43,11 +43,11 @@ func toBackendRefs(backend networkingv1.IngressBackend) []gatewayv1.HTTPBackendR
 }
 
 // toMatches
-func toMatches() []gatewayv1.HTTPRouteMatch {
+func toMatches(ingressRule networkingv1.HTTPIngressPath) []gatewayv1.HTTPRouteMatch {
 	matches := make([]gatewayv1.HTTPRouteMatch, 0)
 
-	path := "/example"
-	pathMatchType := "Exact"
+	path := ingressRule.Path
+	pathMatchType := ingressRule.PathType
 
 	matchRule := gatewayv1.HTTPRouteMatch{
 		Path: matchPath(path, pathMatchType),
@@ -57,9 +57,11 @@ func toMatches() []gatewayv1.HTTPRouteMatch {
 	return matches
 }
 
-func matchPath(path, pathMatchType string) *gatewayv1.HTTPPathMatch {
+func matchPath(path string, pathMatchType *networkingv1.PathType) *gatewayv1.HTTPPathMatch {
+	// Ingress pathType must be translated to https://pkg.go.dev/sigs.k8s.io/gateway-api@v1.3.0/apis/v1#PathMatchType
+	// The value ImplementationSpecific is not valid in Gateway API.
 	matchRule := &gatewayv1.HTTPPathMatch{
-		Type:  (*gatewayv1.PathMatchType)(&pathMatchType),
+		Type:  (*gatewayv1.PathMatchType)(pathMatchType),
 		Value: &path,
 	}
 	return matchRule
