@@ -41,3 +41,24 @@ func toBackendRefs() []gatewayv1.HTTPBackendRef {
 }
 
 // toMatches
+func toMatches() []gatewayv1.HTTPRouteMatch {
+	matches := make([]gatewayv1.HTTPRouteMatch, 0)
+
+	path := "/example"
+	pathMatchType := "Exact"
+
+	matchRule := gatewayv1.HTTPRouteMatch{
+		Path: matchPath(path, pathMatchType),
+	}
+	matches = append(matches, matchRule)
+
+	return matches
+}
+
+func matchPath(path, pathMatchType string) *gatewayv1.HTTPPathMatch {
+	matchRule := &gatewayv1.HTTPPathMatch{
+		Type:  (*gatewayv1.PathMatchType)(&pathMatchType),
+		Value: &path,
+	}
+	return matchRule
+}
