@@ -1,36 +1,38 @@
 package httproute
 
 import (
+	networkingv1 "k8s.io/api/networking/v1"
 	gatewayv1 "sigs.k8s.io/gateway-api/apis/v1"
 )
 
-// toRules
-
-func toRules() []gatewayv1.HTTPRouteRule {
+func toRules(ingressRule []networkingv1.IngressRule) []gatewayv1.HTTPRouteRule {
 	rules := make([]gatewayv1.HTTPRouteRule, 0)
 
+	// Only rule 0 is supported for now
 	rule := &gatewayv1.HTTPRouteRule{
-		BackendRefs: toBackendRefs(),
+		BackendRefs: toBackendRefs(ingressRule[0].HTTP.Paths[0].Backend),
+		Matches:     toMatches(),
 	}
 
 	rules = append(rules, *rule)
 	return rules
 }
 
-// toBackendRef
-func toBackendRefs() []gatewayv1.HTTPBackendRef {
+func toBackendRefs(backend networkingv1.IngressBackend) []gatewayv1.HTTPBackendRef {
+	name := backend.Service.Name
+	// namespace := backend.Service.Namespace
+	port := backend.Service.Port.Number
+	weight := int32(100)
 	kind := gatewayv1.Kind("Service")
-	port := gatewayv1.PortNumber(80)
-	weith := int32(1)
 
 	backendRef := &gatewayv1.HTTPBackendRef{
 		BackendRef: gatewayv1.BackendRef{
 			BackendObjectReference: gatewayv1.BackendObjectReference{
 				Kind: &kind,
-				Name: gatewayv1.ObjectName("service1"),
-				Port: &port,
+				Name: gatewayv1.ObjectName(name),
+				Port: (*gatewayv1.PortNumber)(&port),
 			},
-			Weight: &weith,
+			Weight: &weight,
 		},
 	}
 
