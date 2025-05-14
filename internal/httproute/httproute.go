@@ -43,6 +43,10 @@ func (r *HTTPRoute) WithIngress(ingress *networkingv1.Ingress) *HTTPRoute {
 	r.Resource.ObjectMeta.Namespace = ingress.Namespace
 
 	r.Resource.Spec.Hostnames = []gatewayv1.Hostname{gatewayv1.Hostname(ingress.Spec.Rules[0].Host)}
+
+	rules := toRules(ingress.Spec.Rules)
+	r.Resource.Spec.Rules = rules
+
 	return r
 }
 
