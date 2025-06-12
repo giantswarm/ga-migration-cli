@@ -9,6 +9,7 @@ import (
 
 	"github.com/giantswarm/ga-migration-cli/internal/httproute"
 	"github.com/giantswarm/ga-migration-cli/internal/ingress"
+	"github.com/giantswarm/ga-migration-cli/internal/securitypolicy"
 	"github.com/spf13/cobra"
 )
 
@@ -45,5 +46,14 @@ func runConvert(cmd *cobra.Command, args []string) {
 	err = resourcePrinter.PrintObj(httproute.Resource, os.Stdout)
 	if err != nil {
 		fmt.Printf("# Error printing %s HTTPRoute: %v\n", httproute.Resource.Name, err)
+	}
+
+	securityPolicy := securitypolicy.New().WithHTTPRoute(httproute.Resource).WithIngress(source)
+
+	if securityPolicy != nil {
+		err = resourcePrinter.PrintObj(securityPolicy.Resource, os.Stdout)
+		if err != nil {
+			fmt.Printf("# Error printing %s HTTPRoute: %v\n", httproute.Resource.Name, err)
+		}
 	}
 }
