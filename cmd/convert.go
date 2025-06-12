@@ -48,7 +48,7 @@ func runConvert(cmd *cobra.Command, args []string) {
 		fmt.Printf("# Error printing %s HTTPRoute: %v\n", httproute.Resource.Name, err)
 	}
 
-	securityPolicy := securitypolicy.New().WithHTTPRoute(httproute.Resource).WithAnnotations()
+	securityPolicy := securitypolicy.New().WithHTTPRoute(httproute.Resource).WithIngress(source)
 
 	if securityPolicy != nil {
 		err = resourcePrinter.PrintObj(securityPolicy.Resource, os.Stdout)
