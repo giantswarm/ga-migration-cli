@@ -50,7 +50,7 @@ func (r *SecurityPolicy) WithIngress(ingress *networkingv1.Ingress) *SecurityPol
 	if authType, ok := annotations[IngressNginxAuthType]; ok {
 		return r.WithAuth(authType, annotations[IngressNginxAuthSecret])
 	}
-	return r
+	return nil
 }
 
 func (r *SecurityPolicy) WithAuth(authType, authSecret string) *SecurityPolicy {
