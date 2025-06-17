@@ -8,7 +8,7 @@ require (
 	github.com/envoyproxy/gateway v1.4.1
 	github.com/spf13/cobra v1.9.1
 	k8s.io/api v0.33.1
-	k8s.io/apimachinery v0.34.0-alpha.0
+	k8s.io/apimachinery v0.33.1
 	k8s.io/cli-runtime v0.33.1
 	sigs.k8s.io/gateway-api v1.3.0
 	sigs.k8s.io/yaml v1.4.0
