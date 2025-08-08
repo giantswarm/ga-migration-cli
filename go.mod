@@ -5,7 +5,7 @@ go 1.24.3
 toolchain go1.24.5
 
 require (
-	github.com/envoyproxy/gateway v1.4.2
+	github.com/envoyproxy/gateway v1.5.0
 	github.com/spf13/cobra v1.9.1
 	k8s.io/api v0.33.3
 	k8s.io/apimachinery v0.34.0-beta.0
