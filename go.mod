@@ -2,7 +2,7 @@ module github.com/giantswarm/ga-migration-cli
 
 go 1.24.3
 
-toolchain go1.25.3
+toolchain go1.25.5
 
 require (
 	github.com/envoyproxy/gateway v1.4.2
